@@ -1,0 +1,29 @@
+{
+  "name": "emit-dymo",
+  "version": "1.0.0",
+  "description": "CLI for managing Codepush releases and Github tagging for Emit.",
+  "main": "index.js",
+  "bin": {
+    "dymo": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emitapp/dymo.git"
+  },
+  "author": "Anderson Addo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emitapp/dymo/issues"
+  },
+  "homepage": "https://github.com/emitapp/dymo#readme",
+  "dependencies": {
+    "@octokit/rest": "^18.9.1",
+    "dotenv": "^10.0.0",
+    "folder-hash": "^4.0.1",
+    "get-installed-path": "^4.0.8",
+    "terminal-kit": "^2.1.6"
+  }
+}
