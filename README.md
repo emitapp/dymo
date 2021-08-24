@@ -12,4 +12,7 @@ How to install Dymo locally:
 3. Create a `.env` file in the root directory of dymo and add this `GITHUB_KEY=xxxxxxx` (with your own key).. Info on how to make a key can be found [here](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 4. Now you can just run `dymo`
 
+<sup><sub>Originally designed and implemented in Maui 🏝️</sub></sup>
+
+
 
