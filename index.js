@@ -17,16 +17,16 @@ const IOS_CP_KEY = "LumberjackApps/Biteup-iOS"
 const ANDROID_CP_KEY = "LumberjackApps/Biteup-Android"
 const PROD_DEPLOYMENT_NAME = "Production"
 const DEV_DEPLOYMENT_NAME = "Staging"
-const HASHING_PATH = '/Users/andersonaddo/lunchme'
-const TARGET_GIT_REMOTE = "https://github.com/andersonaddo/github-playground.git"
+const HASHING_PATH = '.'
+const TARGET_GIT_REMOTE = "https://github.com/emitapp/emit.git"
 const MAIN_GIT_BRANCH = "master"
 const IOS_CP_TAG_PREFIX = "ios-cp-"
 const ANDROID_CP_TAG_PREFIX = "android-cp-"
-const GIT_USER_AGENT = "https://github.com/emitapp/dymo"
-const GIT_REPO_OWNER = "andersonaddo"
-const GIT_REPO_NAME = "github-playground"
+const GIT_REPO_OWNER = "emitapp"
+const GIT_REPO_NAME = "emit"
 
 //Stuff you probably don't wanna change
+const GIT_USER_AGENT = "https://github.com/emitapp/dymo"
 const ANDROID_CHOICE_INDEX = 0
 const IOS_CHOICE_INDEX = 1
 const BOTH_CHOICE_INDEX = 2
@@ -42,13 +42,12 @@ const main = async () => {
     try {
         const args = parseArguments()
         listenForCtrlC()
+        await checkForCorrectGitRemote()
+        await installEnv()
 
         if (args.mode == MODES.PROD) {
-            await installEnv()
             checkForGithubKey()
-
             await checkForMoreutils()
-            await checkForCorrectGitRemote()
 
             const platformChoice = await getPlatformChoice();
             term("\n")
@@ -113,12 +112,15 @@ const parseArguments = () => {
     }
 
     if (args.includes("clear")) {
-        term.red("Clear mode not supported yet!")("\n")
+        term.red("Clear mode not supported yet! Generally, clearing codepush deployments is unsafe")("\n")
+        term.red("For now, you'll have to enter these manually:")("\n")
+        term.yellow(`code-push deployment clear ${ANDROID_CP_KEY} ${DEV_DEPLOYMENT_NAME}`)("\n")
+        term.yellow(`code-push deployment clear ${IOS_CP_KEY} ${DEV_DEPLOYMENT_NAME}`)("\n")
         process.exit()
     }
 
     if (!mode) {
-        term.red("Choose a mode. Check Dymo README for usage!")("\n")
+        term.red("Usage: dymo [dev | prod | clean] [m]")("\n")
         process.exit()
     }
 
@@ -341,7 +343,6 @@ codepushAndTag = async (isAndroid, lastVersions, projectHash, commitHash, extraM
         process.exit();
     }
     newVersion += 1;
-    console.log(newVersion)
     await tagGithubRepo(newVersion, isAndroid, projectHash, commitHash, extraMessage)
     await deployToCodepush(isAndroid, processArgs)
 }
