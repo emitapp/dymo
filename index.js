@@ -285,6 +285,13 @@ const getFullCommitHash = async (hash) => {
     return stdout
 }
 
+const getCommitMessage = async (fullHash) => {
+    const command = `git log --format=%B -n 1 ${fullHash}`
+    const { stdout, stderr } = await exec(command);
+    if (stderr) throw stderr
+    return stdout
+}
+
 const checkForGithubKey = () => {
     if (!process.env.GITHUB_KEY) {
         term.red("Missing Github Personal Access Token \n");
@@ -299,11 +306,13 @@ const tagGithubRepo = async (codepushVersion, isAndroid, hash, commitHash, extra
         userAgent: GIT_USER_AGENT, //https://docs.github.com/en/rest/overview/resources-in-the-rest-api#user-agent-required
     })
 
+    const fullCommitHash = await (await getFullCommitHash(commitHash)).trim()
+
     const baseName = isAndroid ? ANDROID_CP_TAG_PREFIX : IOS_CP_TAG_PREFIX
     let body = `Release made with [Dymo](https://github.com/emitapp/dymo) v${pjson.version} \n`;
     body += `Project hash: \`${hash.hash}\` (from ${recursivelyCountHashChildren(hash)} hashed files).`
-    body += `\n`
-    body += extraMessage
+    body += `\n\nCommit Message: \n` + await getCommitMessage(fullCommitHash)
+    if (extraMessage) body += `\n\n` + extraMessage
     const title = `${isAndroid ? "Android" : "iOS"} Codepush v${codepushVersion}`
 
     await octokit.rest.repos.createRelease({
@@ -311,7 +320,7 @@ const tagGithubRepo = async (codepushVersion, isAndroid, hash, commitHash, extra
         repo: GIT_REPO_NAME,
         tag_name: baseName + codepushVersion,
         body,
-        target_commitish: (await getFullCommitHash(commitHash)).trim(),
+        target_commitish: fullCommitHash,
         name: title
     });
 }
